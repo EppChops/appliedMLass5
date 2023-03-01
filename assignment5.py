@@ -71,7 +71,7 @@ Xtest, YTest = validation_generator.next()
 
 
 augmented_gen = ImageDataGenerator(rescale=1.0/255, 
-                                   rotation_range=90, 
+                                   rotation_range=180, 
                                    horizontal_flip=True,
                                    vertical_flip=True,
                                    #brightness_range=(10, 255),
@@ -88,7 +88,7 @@ augmented_train_generator = augmented_gen.flow_from_directory(
         shuffle=True)
 
 cnn = make_convnet()
-history = cnn.fit(augmented_train_generator, epochs=20, validation_data=validation_generator)
+history = cnn.fit(augmented_train_generator, epochs=10, validation_data=validation_generator)
 
 cnn.save_weights('augmented_weights')
 
