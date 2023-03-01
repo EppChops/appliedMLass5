@@ -1,0 +1,2 @@
+model_checkpoint_path: "augmented_weights"
+all_model_checkpoint_paths: "augmented_weights"
