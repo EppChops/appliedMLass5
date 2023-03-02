@@ -112,9 +112,10 @@ augmented_train_generator = augmented_gen.flow_from_directory(
 # ax2.legend(['train', 'val'], loc="upper left")
 # plt.show()
 
-def create_vgg16_features(input_dir, out_file):
-    feature_extractor = applications.VGG16(include_top=False, weights='imagenet',
+feature_extractor = applications.VGG16(include_top=False, weights='imagenet',
                                         input_shape=(img_size, img_size, 3))
+
+def create_vgg16_features(input_dir, out_file):
 
     vgg_data_gen = ImageDataGenerator(preprocessing_function=preprocess_input)
 
@@ -132,8 +133,8 @@ def create_vgg16_features(input_dir, out_file):
     with open(out_file, 'wb') as f:
         np.save(f, cnn_features)
 
-#create_vgg16_features('/train', 'training_set')
-#create_vgg16_features('/validation', 'validation_set')
+create_vgg16_features('/train', 'training_set')
+create_vgg16_features('/validation', 'validation_set')
 
 def get_labels(n):
     return np.array([0]*(n//2) + [1]*(n//2))
@@ -151,6 +152,11 @@ def make_vgg_classifier():
 #   print(model.summary())
   return model
 
+
+
+
+
+
 def train_on_cnn_features(train_set, val_set):
         with open(train_set, 'rb') as f:
                 train_data = np.load(f)
@@ -164,13 +170,12 @@ def train_on_cnn_features(train_set, val_set):
         history = cnn.fit(train_data, get_labels(len(train_data)), epochs = 10, 
                 validation_data =(val_data, get_labels(len(val_data))))
 
-train_on_cnn_features('training_set', 'validation_set')
+       
+#train_on_cnn_features('training_set', 'validation_set')
 
 
 ## ---- Part 4 ---- ##
 
-first_layer_weights = make_vgg_classifier().get_weights()[0]
-first_layer_weights.shape
 
 def kernel_image(weights, i, positive):
     
@@ -191,3 +196,11 @@ def kernel_image(weights, i, positive):
 
     return k
 
+ 
+first_layer_weights = feature_extractor.get_weights()[0]
+print(first_layer_weights.shape)
+
+f, axarr = plt.subplots(2,2)
+axarr[0,0].imshow(kernel_image(first_layer_weights, 0, True))
+axarr[0,1].imshow(kernel_image(first_layer_weights, 0, False))
+plt.show()
