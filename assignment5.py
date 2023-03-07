@@ -68,16 +68,14 @@ validation_generator = data_gen.flow_from_directory(
 Xtest, YTest = validation_generator.next()
 #cnn = make_convnet()
 #history = cnn.fit(train_generator, epochs=10, validation_data=validation_generator)
-
 #cnn.save_weights('weights')
-
+#print(history.history['val_accuracy'][len(history.history['val_accuracy'])-1])
 
 augmented_gen = ImageDataGenerator(rescale=1.0/255, 
-                                   rotation_range=180, 
-                                   horizontal_flip=True,
+                                   rotation_range=10, 
                                    vertical_flip=True,
-                                   #brightness_range=(10, 255),
-                                   #channel_shift_range=20.5
+                                   brightness_range=(0.8, 1.2),
+                                   shear_range=5
                                    )
 # Read images from directory
 augmented_train_generator = augmented_gen.flow_from_directory(
@@ -91,10 +89,11 @@ augmented_train_generator = augmented_gen.flow_from_directory(
 
 
 
-# cnn = make_convnet()
-# history = cnn.fit(augmented_train_generator, epochs=10, validation_data=validation_generator)
+cnn = make_convnet()
+history = cnn.fit(augmented_train_generator, epochs=10, validation_data=validation_generator)
 
-# cnn.save_weights('augmented_weights')
+#cnn.save_weights('augmented_weights')
+print(history.history['val_accuracy'][len(history.history['val_accuracy'])-1])
 
 # fig, (ax1, ax2) = plt.subplots(2, 1)
 # ax1.plot(history.history['loss'])
@@ -112,6 +111,9 @@ augmented_train_generator = augmented_gen.flow_from_directory(
 # ax2.legend(['train', 'val'], loc="upper left")
 # plt.show()
 
+# **Accuracy of final epoch:** 0.7725694179534912
+
+"""
 feature_extractor = applications.VGG16(include_top=False, weights='imagenet',
                                         input_shape=(img_size, img_size, 3))
 
@@ -169,9 +171,13 @@ def train_on_cnn_features(train_set, val_set):
 
         history = cnn.fit(train_data, get_labels(len(train_data)), epochs = 10, 
                 validation_data =(val_data, get_labels(len(val_data))))
+        
+        return history
 
        
-#train_on_cnn_features('training_set', 'validation_set')
+hist = train_on_cnn_features('training_set', 'validation_set')
+
+print(hist.history['val_accuracy'][len(hist.history['val_accuracy'])-1])
 
 
 ## ---- Part 4 ---- ##
@@ -204,3 +210,4 @@ f, axarr = plt.subplots(2,2)
 axarr[0,0].imshow(kernel_image(first_layer_weights, 0, True))
 axarr[0,1].imshow(kernel_image(first_layer_weights, 0, False))
 plt.show()
+"""
